@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+<h2>Checkout Vehicle</h2>
+
+<p>Plate: {{ vehicle.plate_number }}</p>
+<p>Driver: {{ vehicle.driver_name }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <button type="submit">Process Checkout</button>
+</form>
+</div>
+{% endblock %}

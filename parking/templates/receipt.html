@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receipt</title>
+</head>
+
+<body>
+
+<h2>Parking Receipt</h2>
+
+<p><strong>Ticket Number:</strong> {{ vehicle.ticket_number }}</p>
+<p><strong>Plate Number:</strong> {{ vehicle.plate_number }}</p>
+<p><strong>Driver Name:</strong> {{ vehicle.driver_name }}</p>
+<p><strong>Vehicle Type:</strong> {{ vehicle.vehicle_type.vehicle_type }}</p>
+
+<p><strong>Arrival Time:</strong> {{ vehicle.arrival_time }}</p>
+<p><strong>Departure Time:</strong> {{ vehicle.departure_time }}</p>
+
+<p><strong>Total Hours:</strong> {{ hours }}</p>
+<p><strong>Total Fee:</strong> UGX {{ fee }}</p>
+
+<br>
+
+<!-- PRINT BUTTON (NO JS) -->
+<a href="{% url 'print_receipt' vehicle.id %}">
+    Open Printable Receipt
+</a>
+
+<br><br>
+
+<p>To print: open the page above and press Ctrl + P</p>
+
+</body>
+</html>

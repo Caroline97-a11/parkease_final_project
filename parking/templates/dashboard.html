@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4">Parking Dashboard</h2>
+
+<!-- SUMMARY CARDS -->
+<div class="row mb-4">
+
+    <div class="col-md-4">
+        <div class="card text-white bg-primary p-3">
+            <h5>Parked</h5>
+            <h3>{{ parked }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success p-3">
+            <h5>Exited</h5>
+            <h3>{{ exited }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-dark p-3">
+            <h5>Total Revenue</h5>
+            <h3>UGX {{ total_revenue }}</h3>
+        </div>
+    </div>
+
+</div>
+
+<!-- VEHICLE TABLE -->
+<table class="table table-bordered table-striped">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Ticket</th>
+            <th>Plate</th>
+            <th>Driver</th>
+            <th>Status</th>
+            <th>Fee</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for v in vehicles %}
+        <tr>
+            <td>{{ v.ticket_number }}</td>
+            <td>{{ v.plate_number }}</td>
+            <td>{{ v.driver_name }}</td>
+
+            <!-- STATUS BADGE -->
+            <td>
+                {% if v.status == "parked" %}
+                    <span class="badge bg-warning text-dark">Parked</span>
+                {% else %}
+                    <span class="badge bg-success">Signed Out</span>
+                {% endif %}
+            </td>
+
+            <td>{{ v.fee }}</td>
+
+            <!-- ACTION -->
+            <td>
+                {% if v.status == "parked" %}
+
+                    <a href="{% url 'checkout_vehicle' v.id %}" class="btn btn-warning btn-sm">
+                        Checkout
+                    </a>
+
+                {% else %}
+
+                    <a href="{% url 'print_receipt' v.id %}" class="btn btn-info btn-sm">
+                        Receipt
+                    </a>
+
+                {% endif %}
+            </td>
+        </tr>
+
+        {% empty %}
+        <tr>
+            <td colspan="6" class="text-center">No records available</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+{% endblock %}

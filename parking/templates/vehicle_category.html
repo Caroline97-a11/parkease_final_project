@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Vehicle Categories</h1>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Vehicle Type</th>
+            <th>Day Rate (UGX)</th>
+            <th>Night Rate (UGX)</th>
+            <th>Short Stay Rate (UGX)</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for category in categories %}
+        <tr>
+            <td>{{ category.get_vehicle_type_display }}</td>
+            <td>{{ category.day_rate }}</td>
+            <td>{{ category.night_rate }}</td>
+            <td>{{ category.short_stay_rate }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No vehicle categories available.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
