@@ -36,9 +36,11 @@
         <tr>
             <th>Ticket</th>
             <th>Plate</th>
+            <th>Vehicle Type</th>
             <th>Driver</th>
-            <th>Status</th>
             <th>Fee</th>
+            <th>Registered by:</th>
+            <th>Status</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -48,7 +50,10 @@
         <tr>
             <td>{{ v.ticket_number }}</td>
             <td>{{ v.plate_number }}</td>
+            <td>{{v.vehicle_type}}</td>
             <td>{{ v.driver_name }}</td>
+             <td>{{ v.fee }}</td>
+             <td>{{v.registered_by}}</td>
 
             <!-- STATUS BADGE -->
             <td>
@@ -59,7 +64,7 @@
                 {% endif %}
             </td>
 
-            <td>{{ v.fee }}</td>
+           
 
             <!-- ACTION -->
             <td>

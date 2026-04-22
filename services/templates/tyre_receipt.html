@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Tyre Receipt</h2>
+
+<p>Receipt: {{ service.receipt_number }}</p>
+<p>Plate: {{ service.vehicle_plate }}</p>
+<p>Service: {{ service.service.name }}</p>
+<p>Price: UGX {{ price }}</p>
+<p>Date: {{ service.date }}</p>
+<p>Staff: {{ service.registered_by }}</p>
+
+<p>Press Ctrl + P to print</p>
+
+{% endblock %}

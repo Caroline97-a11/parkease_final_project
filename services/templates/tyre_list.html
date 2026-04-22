@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Tyre Services</h2>
+
+<table border="1">
+<tr>
+    <th>Plate</th>
+    <th>Service</th>
+    <th>Price</th>
+    <th>Receipt</th>
+</tr>
+
+{% for s in services %}
+<tr>
+    <td>{{ s.vehicle_plate }}</td>
+    <td>{{ s.service.name }}</td>
+    <td>{{ s.service.price }}</td>
+    <td>
+        <a href="{% url 'tyre_receipt' s.id %}">View</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

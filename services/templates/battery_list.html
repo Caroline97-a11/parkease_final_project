@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Battery Services</h2>
+
+<table border="1">
+<tr>
+    <th>Customer</th>
+    <th>Type</th>
+    <th>Price</th>
+    <th>Receipt</th>
+</tr>
+
+{% for b in batteries %}
+<tr>
+    <td>{{ b.customer_name }}</td>
+    <td>{{ b.battery_type }}</td>
+    <td>{{ b.price }}</td>
+    <td>
+        <a href="{% url 'battery_receipt' b.id %}">View</a>
+    </td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

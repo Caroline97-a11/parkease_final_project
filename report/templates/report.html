@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-3">Daily Report Dashboard</h2>
+
+<!-- DATE FILTER -->
+<form method="GET" class="mb-3">
+    <input type="date" name="date" value="{{ date }}">
+    <button type="submit">Filter</button>
+</form>
+
+<!-- SUMMARY CARDS -->
+<div class="row mb-4">
+
+    <!-- PARKING -->
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Parking Revenue</h5>
+                <h3>UGX {{ parking_total }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- TYRE -->
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Tyre Revenue</h5>
+                <h3>UGX {{ tyre_total }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- BATTERY -->
+    <div class="col-md-4">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Battery Revenue</h5>
+                <h3>UGX {{ battery_total }}</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- TOTAL CARD -->
+<div class="card text-white bg-danger mb-4">
+    <div class="card-body">
+        <h4>Total Revenue</h4>
+        <h2>UGX {{ total_revenue }}</h2>
+    </div>
+</div>
+
+<!-- VEHICLES TABLE -->
+<h4>Signed Out Vehicles</h4>
+
+<table class="table table-bordered">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Plate</th>
+            <th>Vehicle type</th>
+            <th>Driver</th>
+            <th>Fee</th>
+            <th>Departure Time</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for v in vehicles %}
+        <tr>
+            <td>{{ v.plate_number }}</td>
+            <td>{{v.vehicle_type}}</td>
+            <td>{{ v.driver_name }}</td>
+            <td>{{ v.fee }}</td>
+            <td>{{ v.departure_time }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No records found</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+{% endblock %}
