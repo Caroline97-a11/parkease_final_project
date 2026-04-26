@@ -1,18 +1,95 @@
-  {% load crispy_forms_tags %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Rgistration</title>
+    <title>User Registration</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="card">
-    <form method="post">
-        {% csrf_token %}
-        {{ form|crispy}}
-    </form>
+
+<body class="bg-light">
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4">
+
+                    <h4 class="fw-bold text-center mb-4">User Registration</h4>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="row g-3">
+
+                            <!-- FIRST NAME -->
+                            <div class="col-md-6">
+                                <label class="form-label">First Name</label>
+                                {{ form.first_name }}
+                            </div>
+
+                            <!-- LAST NAME -->
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name</label>
+                                {{ form.last_name }}
+                            </div>
+
+                            <!-- EMAIL -->
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+
+                            <!-- USERNAME -->
+                            <div class="col-md-6">
+                                <label class="form-label">Username</label>
+                                {{ form.username }}
+                            </div>
+
+                            <!-- ROLE -->
+                            <div class="col-md-12">
+                                <label class="form-label">Role</label>
+                                {{ form.role }}
+                            </div>
+
+                            <!-- PASSWORD -->
+                            <div class="col-md-6">
+                                <label class="form-label">Password</label>
+                                {{ form.password1 }}
+                            </div>
+
+                            <!-- CONFIRM PASSWORD -->
+                            <div class="col-md-6">
+                                <label class="form-label">Confirm Password</label>
+                                {{ form.password2 }}
+                            </div>
+
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                Register
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
+
 </body>
 </html>

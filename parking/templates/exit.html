@@ -1,16 +1,102 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container mt-4">
 
-<h2>Checkout Vehicle</h2>
+<div class="container py-4">
 
-<p>Plate: {{ vehicle.plate_number }}</p>
-<p>Driver: {{ vehicle.driver_name }}</p>
+    <div class="row justify-content-center g-4">
 
-<form method="POST">
-    {% csrf_token %}
-    <button type="submit">Process Checkout</button>
-</form>
+        <!-- LEFT SIDE -->
+        <div class="col-lg-6">
+
+            <!-- FORM CARD -->
+            <div class="card shadow-sm">
+
+                <div class="card-header">
+                    <i class="bi bi-person me-1"></i>
+                    Receiver Information
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        {{ form|crispy }}
+
+                        <button class="btn btn-primary w-100 mt-3">
+                            Confirm Payment & Sign-out
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE -->
+        <div class="col-lg-4">
+
+            <!-- VEHICLE CARD -->
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+                    Vehicle & Arrival Details
+                    <span class="badge bg-warning text-dark float-end">
+                        PENDING SIGN-OUT
+                    </span>
+                </div>
+
+                <div class="card-body">
+
+                    <p><strong>Plate:</strong> {{ vehicle.plate_number }}</p>
+                    <p><strong>Arrival:</strong> {{ vehicle.arrival_time }}</p>
+                    <p><strong>Duration:</strong> {{ duration }} hrs</p>
+
+                    <div class="mt-3 fw-bold text-primary fs-4">
+                        UGX {{ fee }}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RECEIPT CARD (CENTERED) -->
+            <div class="d-flex justify-content-center">
+
+                <div class="card receipt w-100 shadow-sm">
+
+                    <div class="card-body text-center py-4">
+
+                        <h6 class="fw-bold mb-3">PARKEASE RECEIPT</h6>
+
+                        <hr>
+
+                        <p class="mb-1"><strong>Ticket:</strong> {{ vehicle.ticket_number }}</p>
+                        <p class="mb-1"><strong>Plate:</strong> {{ vehicle.plate_number }}</p>
+                        <p class="mb-1"><strong>Check-in:</strong> {{ vehicle.arrival_time }}</p>
+                        <p class="mb-1"><strong>Check-out:</strong> Now</p>
+                        <p class="mb-2"><strong>Duration:</strong> {{ duration }} hrs</p>
+
+                        <hr>
+
+                        <h4 class="text-primary mb-0">
+                            UGX {{ fee }}
+                        </h4>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}
