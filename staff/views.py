@@ -34,7 +34,7 @@ def loginPage(request):
     else:
         form = StaffLoginForm()
 
-    return render(request, 'loginpage.html', {'form': form})
+    return render(request, 'loginPage.html', {'form': form})
 
 
 # =========================
