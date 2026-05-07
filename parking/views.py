@@ -7,109 +7,96 @@ from parking.forms import VehicleCategoryForm, VehicleRegistrationForm, Checkout
 from .models import VehicleCategory, VehicleRegistration
 
 
-def no_access():
-    return HttpResponseForbidden(" You do not have permission to access this page.")
+# ✅ PROFESSIONAL ACCESS HANDLER
+def no_access(request):
+    messages.error(request, "You are not authorized to access this page.")
+    return redirect("dashboard")
 
 
+# =========================
+# CATEGORY
+# =========================
+
+@login_required
 def vehicle_category(request):
     if request.user.role != "ADMIN":
-        return no_access()
+        return no_access(request)
 
-    form = VehicleCategoryForm()
+    form = VehicleCategoryForm(request.POST or None)
 
     if request.method == 'POST':
-        form = VehicleCategoryForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Category added successfully.")
             return redirect('vehicle_category_list')
 
     return render(request, 'add_category.html', {'form': form})
 
 
+@login_required
 def vehicle_category_list(request):
-    if request.user.role != "ADMIN" and request.user.role != "ATTENDANT":
-        return no_access()
-    else:
+    if request.user.role not in ["ADMIN", "ATTENDANT"]:
+        return no_access(request)
 
-        categories = VehicleCategory.objects.all()
-        return render(request, "vehicle_category.html", {"categories": categories})
+    categories = VehicleCategory.objects.all()
+    return render(request, "vehicle_category.html", {"categories": categories})
 
 
+# =========================
+# VEHICLE REGISTRATION
+# =========================
+
+@login_required
 def register_vehicle(request):
     if request.user.role != "ATTENDANT":
-        return no_access()
+        return no_access(request)
 
-    form = VehicleRegistrationForm()
+    form = VehicleRegistrationForm(request.POST or None)
 
     if request.method == 'POST':
-        form = VehicleRegistrationForm(request.POST)
         if form.is_valid():
             vehicle = form.save(commit=False)
             vehicle.arrival_time = timezone.now()
             vehicle.status = "parked"
+            vehicle.registered_by = request.user
             vehicle.save()
+
+            messages.success(request, "Vehicle registered successfully.")
             return redirect('dashboard')
 
     return render(request, 'vehicle_registration.html', {'form': form})
 
 
-# def vehicle_registration_list(request):
-#     if request.user.role != "ATTENDANT":
-#         return no_access()
+# =========================
+# DASHBOARD
+# =========================
 
-#     vehicles = VehicleRegistration.objects.filter(status="parked").order_by("-arrival_time")
-
-#     return render(request, 'vehicle_list.html', {'vehicles': vehicles})
-
-
-# def no_access():
-#     return HttpResponseForbidden("You do not have permission to access this page.")
-
-
+@login_required
 def dashboard(request):
     if request.user.role not in ["ADMIN", "ATTENDANT"]:
-        return no_access()
+        return no_access(request)
 
     all_vehicles = VehicleRegistration.objects.all().order_by("-arrival_time")
 
-    # =========================
-    # ROLE-BASED DATA SPLIT
-    # =========================
+    parked_vehicles = all_vehicles.filter(status="parked")
+    signed_out_vehicles = all_vehicles.filter(status="signed_out")
 
-    if request.user.role == "ATTENDANT":
-        parked_vehicles = all_vehicles.filter(status="parked")
-        signed_out_vehicles = all_vehicles.filter(status="signed_out")
-
-    elif request.user.role == "ADMIN":
-        parked_vehicles = all_vehicles.filter(status="parked")
-        signed_out_vehicles = all_vehicles.filter(status="signed_out")
-
-    # =========================
-    # COUNTS (FOR CARDS)
-    # =========================
-    total_vehicles = all_vehicles.count()
-    parked = parked_vehicles.count()
-    checked_out = signed_out_vehicles.count()
-
-    # =========================
-    # CARDS
-    # =========================
     cards = [
         {
             "title": "Total Vehicles",
-            "value": total_vehicles,
+            "value": all_vehicles.count(),
             "icon": "bi-car-front",
             "text_color": "text-primary",
         },
         {
             "title": "Currently Parked",
-            "value": parked,
+            "value": parked_vehicles.count(),
             "icon": "bi-check-circle",
             "text_color": "text-success",
         },
         {
             "title": "Checked Out",
-            "value": checked_out,
+            "value": signed_out_vehicles.count(),
             "icon": "bi-box-arrow-right",
             "text_color": "text-dark",
         },
@@ -123,40 +110,42 @@ def dashboard(request):
 
     return render(request, "dashboard.html", context)
 
+
+# =========================
+# CHECKOUT (UPDATED ✅)
+# =========================
+
+@login_required
 def checkout_vehicle(request, pk):
     if request.user.role != "ATTENDANT":
-        return no_access()
+        return no_access(request)
 
     vehicle = get_object_or_404(VehicleRegistration, id=pk)
-
-    now = timezone.now()
-    duration = (now - vehicle.arrival_time).total_seconds() / 3600
-
-    category = vehicle.vehicle_type
-
-    if duration < 3:
-        fee = category.short_stay_rate
-        rate_type = "short"
-    else:
-        hour = timezone.localtime(now).hour
-        if 6 <= hour < 19:
-            fee = category.day_rate
-            rate_type = "day"
-        else:
-            fee = category.night_rate
-            rate_type = "night"
 
     if request.method == "POST":
         form = CheckoutForm(request.POST, instance=vehicle)
         if form.is_valid():
-            vehicle.departure_time = now
+            vehicle = form.save(commit=False)
+
+            vehicle.departure_time = timezone.now()
+
+            # ✅ USE MODEL METHOD (IMPORTANT FIX)
+            fee, rate_type = vehicle.calculate_fee()
+
             vehicle.fee = fee
             vehicle.rate_type = rate_type
             vehicle.status = "signed_out"
+
             vehicle.save()
+
+            messages.success(request, "Vehicle checked out successfully.")
             return redirect("dashboard")
     else:
         form = CheckoutForm(instance=vehicle)
+
+    # preview before submit
+    fee, rate_type = vehicle.calculate_fee()
+    duration = (timezone.now() - vehicle.arrival_time).total_seconds() / 3600
 
     return render(request, "exit.html", {
         "vehicle": vehicle,
@@ -167,19 +156,22 @@ def checkout_vehicle(request, pk):
     })
 
 
+# =========================
+# RECEIPT
+# =========================
+
+@login_required
 def print_receipt(request, pk):
     if request.user.role not in ["ADMIN", "ATTENDANT"]:
-        return no_access()
+        return no_access(request)
 
     vehicle = get_object_or_404(VehicleRegistration, id=pk)
 
-    # Calculate duration
     if vehicle.departure_time and vehicle.arrival_time:
         duration = (vehicle.departure_time - vehicle.arrival_time).total_seconds() / 3600
     else:
         duration = 0
 
-    # Context (must be OUTSIDE the if/else)
     context = {
         "vehicle": vehicle,
         "hours": round(duration, 2),
@@ -188,48 +180,26 @@ def print_receipt(request, pk):
     }
 
     return render(request, "receipt.html", context)
+
+
+# =========================
+# EDIT VEHICLE
+# =========================
+
 @login_required
 def edit_vehicle(request, id):
     vehicle = get_object_or_404(VehicleRegistration, id=id)
 
-    # 🚫 prevent editing after sign out
     if vehicle.status != "parked":
         messages.error(request, "You cannot edit a signed-out vehicle.")
         return redirect('dashboard')
 
+    form = VehicleRegistrationForm(request.POST or None, instance=vehicle)
+
     if request.method == "POST":
-        form = VehicleRegistrationForm(request.POST, instance=vehicle)
         if form.is_valid():
             form.save()
             messages.success(request, "Vehicle updated successfully.")
             return redirect('dashboard')
-    else:
-        form = VehicleRegistrationForm(instance=vehicle)
 
     return render(request, 'edit_vehicle.html', {'form': form})
-
-# def edit_category(request, id):
-#     category = get_object_or_404(Category, id=id)
-
-#     form = CategoryForm(request.POST or None, instance=category)
-
-#     if request.method == "POST":
-#         if form.is_valid():
-#             form.save()
-#             return redirect('category_list')
-
-#     context = {
-#         "form": form
-#     }
-
-#     return render(request, "edit_category.html", context)
-
-
-# def delete_category(request, id):
-#     category = get_object_or_404(Category, id=id)
-
-#     if request.method == "POST":
-#         category.delete()
-#         return redirect('category_list')
-
-#     return render(request, "delete_category.html", {"category": category})

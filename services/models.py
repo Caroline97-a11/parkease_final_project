@@ -14,9 +14,8 @@ class ServicePrice(models.Model):
         ("valve", "Valve Replacement"),
     ]
 
+
     name = models.CharField(max_length=20, choices=SERVICE_TYPES)
-    vehicle_size = models.CharField(max_length=50, null=True, blank=True)
-    model = models.CharField(max_length=50, null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
@@ -27,6 +26,8 @@ class TyreService(models.Model):
 
     vehicle_plate = models.CharField(max_length=10)
     service = models.ForeignKey(ServicePrice, on_delete=models.CASCADE)
+    vehicle_size = models.CharField(max_length=50, null=True, blank=True)
+    model = models.CharField(max_length=50, null=True, blank=True)
     registered_by = models.ForeignKey(Staff, on_delete=models.SET_NULL, null=True)
 
     receipt_number = models.CharField(max_length=20, unique=True, editable=False)

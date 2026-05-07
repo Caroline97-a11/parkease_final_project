@@ -23,7 +23,7 @@
     <div class="card border-0 shadow-sm mb-4">
 
         <div class="card-header bg-light fw-bold text-primary ">
-         PARKED VEHICLES
+            PARKED VEHICLES
         </div>
 
         <div class="table-responsive">
@@ -58,16 +58,12 @@
                         <td>
 
                             <!-- EDIT -->
-                            <a href="{% url 'edit_vehicle' vehicle.id %}" 
-                               class="text-success me-3"
-                               title="Edit">
+                            <a href="{% url 'edit_vehicle' vehicle.id %}" class="text-success me-3" title="Edit">
                                 <i class="bi bi-pencil-fill fs-5"></i>
                             </a>
 
                             <!-- SIGN OUT -->
-                            <a href="{% url 'checkout_vehicle' vehicle.id %}" 
-                               class="text-primary"
-                               title="Sign Out">
+                            <a href="{% url 'checkout_vehicle' vehicle.id %}" class="text-primary" title="Sign Out">
                                 <i class="bi bi-box-arrow-right fs-5"></i>
                             </a>
 
@@ -95,7 +91,7 @@
     <div class="card border-0 shadow-sm">
 
         <div class="card-header bg-light fw-bold text-primary ">
-             SIGNED OUT VEHICLES
+            SIGNED OUT VEHICLES
         </div>
 
         <div class="table-responsive">
@@ -127,22 +123,22 @@
 
                         <td>
                             {% if vehicle.rate_type == "day" %}
-                                <span class="badge bg-success-subtle text-success">Day</span>
+                            <span class="badge bg-success-subtle text-success">Day</span>
                             {% elif vehicle.rate_type == "night" %}
-                                <span class="badge bg-dark-subtle text-dark">Night</span>
+                            <span class="badge bg-dark-subtle text-dark">Night</span>
                             {% elif vehicle.rate_type == "short" %}
-                                <span class="badge bg-primary-subtle text-primary">Short</span>
+                            <span class="badge bg-primary-subtle text-primary">Short</span>
+                            {% elif vehicle.rate_type == "overstay" %}
+                            <span class="badge bg-danger-subtle text-danger">Overstay</span>
                             {% else %}
-                                <span class="badge bg-secondary-subtle text-secondary">Pending</span>
+                            <span class="badge bg-secondary-subtle text-secondary">Pending</span>
                             {% endif %}
                         </td>
 
                         <td>
 
                             <!-- RECEIPT -->
-                            <a href="{% url 'print_receipt' vehicle.id %}" 
-                               class="text-success"
-                               title="Receipt">
+                            <a href="{% url 'print_receipt' vehicle.id %}" class="text-success" title="Receipt">
                                 <i class="bi bi-receipt fs-5"></i>
                             </a>
 
